@@ -1,0 +1,21 @@
+[prompt 1]:
+/terminal-setup
+
+[prompt 2]:
+/theme
+
+[prompt 3]:
+/config
+
+[prompt 4]:
+/model
+
+[prompt 5]:
+[mac]: option+t
+[windows]: alt+t
+
+[prompt 6]:
+/init
+
+[prompt 7]: Sirve para ver el consumo general de la session
+/context
