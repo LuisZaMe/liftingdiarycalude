@@ -2,19 +2,10 @@ import { Suspense } from "react";
 import { getUserWorkouts } from "@/data/user-workouts";
 import { Card, CardContent } from "@/components/ui/card";
 import { DashboardClient } from "./dashboard-client";
+import { formatDateParam, parseDateParam } from "@/lib/date-param";
 
 interface DashboardPageProps {
   searchParams: Promise<{ date?: string }>;
-}
-
-function parseDateParam(dateString: string | undefined): Date {
-  if (!dateString) return new Date();
-
-  const [year, month, day] = dateString.split("-").map(Number);
-  if (!year || !month || !day) return new Date();
-
-  const date = new Date(year, month - 1, day);
-  return Number.isNaN(date.getTime()) ? new Date() : date;
 }
 
 export default async function DashboardPage({
@@ -47,5 +38,13 @@ async function DashboardWorkouts({ date }: { date: string | undefined }) {
   const selectedDate = parseDateParam(date);
   const workouts = await getUserWorkouts(selectedDate);
 
-  return <DashboardClient workouts={workouts} selectedDate={selectedDate} />;
+  // The day is handed down as a string, not a Date: React serialises a Date to
+  // a UTC instant across the RSC boundary, which shifts the calendar day for
+  // any browser whose offset differs from the server's.
+  return (
+    <DashboardClient
+      workouts={workouts}
+      selectedDate={formatDateParam(selectedDate)}
+    />
+  );
 }

@@ -11,29 +11,26 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { parseDateParam, formatDateParam } from "@/lib/date-param";
 
 interface CalendarClientProps {
-  selectedDate: Date;
-}
-
-function formatDateToParam(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  selectedDate: string;
 }
 
 export function CalendarClient({ selectedDate }: CalendarClientProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  // The selected date comes from the server as a prop rather than being
-  // re-derived from useSearchParams(), so the calendar and the workout list
-  // can never disagree about which day is showing.
+  // The selected day arrives as a plain "yyyy-MM-dd" string rather than a Date.
+  // A Date crossing the server/client boundary is serialised to a UTC instant,
+  // so a server-built local midnight would be re-read in the browser's zone and
+  // land on the previous day for any browser behind the server's offset.
+  const selected = parseDateParam(selectedDate);
+
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;
 
-    router.push(`/dashboard?date=${formatDateToParam(date)}`);
+    router.push(`/dashboard?date=${formatDateParam(date)}`);
     setOpen(false);
   };
 
@@ -46,14 +43,14 @@ export function CalendarClient({ selectedDate }: CalendarClientProps) {
             className="justify-start text-left font-normal"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {format(selectedDate, "do MMM yyyy")}
+            {format(selected, "do MMM yyyy")}
           </Button>
         }
       />
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
-          selected={selectedDate}
+          selected={selected}
           onSelect={handleDateSelect}
           className="rounded-md"
         />
