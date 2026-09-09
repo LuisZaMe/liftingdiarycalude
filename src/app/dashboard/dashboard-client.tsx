@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CalendarClient } from "./calendar-client";
+import { parseDateParam } from "@/lib/date-param";
 
 interface DashboardWorkout {
   id: string;
@@ -22,19 +23,22 @@ interface DashboardWorkout {
 
 interface DashboardClientProps {
   workouts: DashboardWorkout[];
-  selectedDate: Date;
+  /** The selected calendar day as "yyyy-MM-dd" — see @/lib/date-param. */
+  selectedDate: string;
 }
 
 export function DashboardClient({
   workouts,
   selectedDate,
 }: DashboardClientProps) {
+  const selected = parseDateParam(selectedDate);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h2 className="text-xl font-semibold">
-            Workouts for {format(selectedDate, "do MMM yyyy")}
+            Workouts for {format(selected, "do MMM yyyy")}
           </h2>
           <p className="text-sm text-muted-foreground">
             {workouts.length === 1
@@ -88,7 +92,7 @@ export function DashboardClient({
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground">
-              No workouts logged for {format(selectedDate, "do MMM yyyy")}
+              No workouts logged for {format(selected, "do MMM yyyy")}
             </p>
           </CardContent>
         </Card>
